@@ -1,11 +1,17 @@
 import React, { useState,useEffect } from 'react';
-import './ProductList.css'
+import './ProductList.css';
+import { useDispatch } from 'react-redux';
 import CartItem from './CartItem';
+
 function ProductList() {
     const [showCart, setShowCart] = useState(false); 
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-
-    const plantsArray = [
+const [plantsArray, setPlantsArray] = useState([]); // State for plant data
+  const [addedToCart, setAddedToCart] = useState({}); // Track added items
+  const dispatch = useDispatch();
+  useEffect(() => {
+    
+    setPlantsArray([
         {
             category: "Air Purifying Plants",
             plants: [
@@ -211,7 +217,8 @@ function ProductList() {
                 }
             ]
         }
-    ];
+    ])
+}, []);
    const styleObj={
     backgroundColor: '#4CAF50',
     color: '#fff!important',
@@ -246,6 +253,9 @@ const handlePlantsClick = (e) => {
     e.preventDefault();
     setShowCart(false);
   };
+ const handleAddToCart = (plant) => {
+     dispatch(addItem(plant)); // Dispatch addItem action to add plant to cart
+  };
     return (
         <div>
              <div className="navbar" style={styleObj}>
@@ -268,7 +278,27 @@ const handlePlantsClick = (e) => {
         </div>
         {!showCart? (
         <div className="product-grid">
-
+{plantsArray.map((category) => (
+          <div key={category.category}>
+            <h2>{category.category}</h2>
+            <ul>
+              {category.plants.map((plant) => (
+                <li key={plant.name}>
+                  <img src={plant.image} alt={plant.name} />
+                  <h3>{plant.name}</h3>
+                  <p>{plant.description}</p>
+                  <span>{plant.cost}</span>
+                  <button
+                    disabled={addedToCart[plant.name]} // Disable button if added
+                    onClick={() => handleAddToCart(plant)}
+                  >
+                    Add to Cart
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
         </div>
  ) :  (
